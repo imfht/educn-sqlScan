@@ -7,6 +7,7 @@ import sys
 import threading
 import requests
 from optparse import OptionParser
+import urllib2
 from multiprocessing.dummy import Pool as ThreadPool
 try:
     from Queue import Queue
@@ -18,13 +19,6 @@ except ImportError:
     raise SystemExit('\n[X] lxml模块导入错误,请执行pip install lxml安装!')
 
 logo = '''
- _   _        _  _      __        __            _      _
-| | | |  ___ | || |  ___\ \      / /___   _ __ | |  __| |
-| |_| | / _ \| || | / _ \\ \ /\ / // _ \ | '__|| | / _` |
-|  _  ||  __/| || || (_) |\ V  V /| (_) || |   | || (_| | |_| |_| \___||_||_| \___/  \_/\_/  \___/ |_|   |_| \__,_|
-
-
-改版于 http://www.waitalone.cn/ 增加了多线程和从文件读取功能
 '''
 
 dic = {}
@@ -43,16 +37,16 @@ class SubMain():
         html_data = html.fromstring(scan_data)
         sub_domains = html_data.xpath("//dd/strong/text()")
         return sub_domains
-
-    def get_links(self):
+    @staticmethod
+    def get_links(submain):
         url_link = 'http://i.links.cn/subdomain/'
-        link_post = 'domain=%s&b2=1&b3=1&b4=1' % self.submain
-        link_data = urllib2.Request(self.url_link, data=self.link_post)
+        link_post = 'domain=%s&b2=1&b3=1&b4=1' % submain
+        link_data = urllib2.Request(url_link, data=link_post)
         link_res = urllib2.urlopen(link_data).read()
         html_data = html.fromstring(link_res)
         sub_domains = html_data.xpath("//div[@class='domain']/a/text()")
         sub_domains = [i.replace('http://', '') for i in sub_domains]
-        return self.sublist.extend(sub_domains)
+        return sub_domains
 
     @staticmethod
     def check_valid(domain):
@@ -77,25 +71,28 @@ class SubMain():
             print e
             print(domain,'can not open!')
             pass
-
-    def run(self):
-        self.get_360()
+    @staticmethod
+    def run(domain):
+        sub1 = SubMain.get_360(domain)
         try:
-            self.get_links()
+            sub2=SubMain.get_links(domain)
         except Exception as e:
-            pass
-        return list(set(self.sublist))
+           print e
+           print '无法连接到第二个api'
+        return list(set(sub1+sub2))
 
 
 def run_method(domains,thread_num,need_check=False):
     pool = ThreadPool(processes=thread_num)
-    things = pool.map(SubMain.get_360,domains)
+    things = pool.map(SubMain.run,domains)
     things = [j for i in things for j in i]
     pool.close()
     pool.join()
     if need_check:
-        pool = ThreadPool(processes=thread_num)
+        pool = ThreadPool(processes=thread_num*19)
         things = pool.map(SubMain.check_valid,things)
+        pool.close()
+        pool.join()
         #print things
         #things = [i[0] for i in things]
     return things
@@ -124,7 +121,7 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(0)
     if options.url:
-        SubMain.get_360(options.url)
+#        SubMain.get_360(options.url)
         result = run_method([options.url],1,options.need_check)
     if options.file:
         try:

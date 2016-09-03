@@ -1,3 +1,0 @@
-mail.zepc.edu.cn
-depart.zepc.edu.cn
-www.zepc.edu.cn

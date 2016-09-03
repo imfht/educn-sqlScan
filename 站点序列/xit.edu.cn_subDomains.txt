@@ -1,5 +1,0 @@
-mail.xit.edu.cn
-jwxt.xit.edu.cn
-www.xit.edu.cn
-lib.xit.edu.cn
-zxygj.xit.edu.cn

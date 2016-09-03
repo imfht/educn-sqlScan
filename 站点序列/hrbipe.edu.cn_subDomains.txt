@@ -1,4 +1,0 @@
-dns.hrbipe.edu.cn
-mail.hrbipe.edu.cn
-www.hrbipe.edu.cn
-zsb.hrbipe.edu.cn

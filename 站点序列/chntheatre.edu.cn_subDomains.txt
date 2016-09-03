@@ -1,3 +1,0 @@
-mail.chntheatre.edu.cn
-dns.chntheatre.edu.cn
-www.chntheatre.edu.cn

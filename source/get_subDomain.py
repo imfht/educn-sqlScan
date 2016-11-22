@@ -3,6 +3,8 @@
 # Date: 2015/9/17
 # Created by 独自等待
 # 博客 http://www.waitalone.cn/
+# modifed by fiht, Add check option etc...
+# fiht's blog http://blog.fiht.me
 import sys
 import threading
 import requests
